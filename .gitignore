@@ -12,6 +12,9 @@ dist/
 .env.local
 .env.*.local
 
+# Local configuration (use .prs.json.example as template)
+.prs.json
+
 # IDE
 .vscode/*
 !.vscode/settings.json

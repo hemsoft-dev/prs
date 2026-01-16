@@ -120,6 +120,30 @@ export const env = envSchema.parse(process.env);
 - Pre-commit hooks enforce quality gates
 - CI runs on all PRs
 
+## Release Management
+
+### CHANGELOG.md
+
+- Maintain a **single, concise CHANGELOG.md** at the repository root
+- Each entry MUST correlate to an npm release version
+- Follow [Keep a Changelog](https://keepachangelog.com/) format
+- Categories: Added, Changed, Deprecated, Removed, Fixed, Security
+- Update CHANGELOG.md BEFORE releasing to npm
+- Use semantic versioning (MAJOR.MINOR.PATCH)
+
+### Release Checklist
+
+Before publishing to npm:
+
+1. Update version in `package.json`
+2. Update `CHANGELOG.md` with new version and date
+3. Run all quality checks: `bun run type-check && bun run lint && bun run test:coverage`
+4. Build: `bun run build`
+5. Commit changes: `git commit -am "chore: release v0.x.x"`
+6. Tag release: `git tag v0.x.x`
+7. Push: `git push && git push --tags`
+8. Publish: `npm publish --access public`
+
 ## Notes for AI Agents
 
 - Always run `bun run lint:fix` before committing

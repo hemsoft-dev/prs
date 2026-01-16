@@ -1,16 +1,39 @@
 {
-  "name": "prs",
-  "version": "1.0.0",
-  "description": "Tool to check PR assignments and do agentic analysis on PR's",
+  "name": "@hemsoft/prs",
+  "version": "0.1.0",
+  "description": "Tool to check PR assignments across GitHub and Bitbucket",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "prs": "./dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "github",
+    "bitbucket",
+    "pull-request",
+    "pr",
+    "cli",
+    "code-review"
+  ],
+  "author": "Franz Hemmer",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HemSoft/prs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HemSoft/prs/issues"
+  },
+  "homepage": "https://github.com/HemSoft/prs#readme",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target bun",
     "build:exe": "bun build src/index.ts --outfile prs.exe --compile --target bun-windows-x64",
+    "prepublishOnly": "bun run lint && bun run type-check && bun run build",
     "start": "bun run dist/index.js",
     "test": "vitest",
     "test:run": "vitest run",
@@ -40,8 +63,11 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "chalk": "^5.6.2",
+    "cli-table3": "^0.6.5",
     "commander": "^14.0.2",
     "consola": "^3.4.2",
+    "terminal-link": "^5.0.0",
     "zod": "^4.3.5"
   }
 }
