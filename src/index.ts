@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { existsSync } from "node:fs";
 import chalk from "chalk";
 import Table from "cli-table3";

@@ -1,6 +1,6 @@
 {
   "name": "@hemsoft/prs",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Tool to check PR assignments across GitHub and Bitbucket",
   "type": "module",
   "main": "dist/index.js",
@@ -31,7 +31,7 @@
   "homepage": "https://github.com/HemSoft/prs#readme",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target bun",
+    "build": "bun build src/index.ts --outdir dist --target node",
     "build:exe": "bun build src/index.ts --outfile prs.exe --compile --target bun-windows-x64",
     "prepublishOnly": "bun run lint && bun run type-check && bun run build",
     "start": "bun run dist/index.js",

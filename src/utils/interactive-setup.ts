@@ -1,16 +1,19 @@
+import { exec } from "node:child_process";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { $ } from "bun";
+import { promisify } from "node:util";
 import { consola } from "consola";
 import type { Config } from "../types/config.js";
+
+const execAsync = promisify(exec);
 
 /**
  * Check if GitHub CLI is installed
  */
 export async function checkGitHubCLI(): Promise<boolean> {
   try {
-    await $`gh --version`.quiet();
+    await execAsync("gh --version");
     return true;
   } catch {
     return false;
@@ -22,8 +25,8 @@ export async function checkGitHubCLI(): Promise<boolean> {
  */
 export async function getGitHubAccounts(): Promise<string[]> {
   try {
-    const result = await $`gh auth status`.quiet();
-    const output = result.stderr.toString();
+    const { stderr } = await execAsync("gh auth status");
+    const output = stderr;
 
     const accounts: string[] = [];
     const regex = /✓\s+Logged in to github\.com account (\S+)/gi;
