@@ -30,15 +30,15 @@ Configuration is loaded from multiple sources (highest priority first):
 
 ```bash
 # GitHub
-GITHUB_ORG=relias-engineering
+GITHUB_ORG=your-org
 GITHUB_TOKEN=ghp_xxx           # Optional, uses gh CLI auth by default
 GH_TOKEN=ghp_xxx               # Alternative to GITHUB_TOKEN
 
 # Bitbucket
-BITBUCKET_WORKSPACE=relias
+BITBUCKET_WORKSPACE=your-workspace
 BITBUCKET_USERNAME=your-username
 BITBUCKET_API_KEY=your-api-key
-BITBUCKET_USER_DISPLAY_NAME="Franz Hemmer"
+BITBUCKET_USER_DISPLAY_NAME="Your Name"
 
 # Behavior
 SKIP_BITBUCKET=false
@@ -52,16 +52,16 @@ Create `.prs.json` in your home directory or project root:
 ```json
 {
   "github": {
-    "org": "relias-engineering",
+    "org": "your-org",
     "accounts": [
-      { "account": "HemSoft", "org": "HemSoft" },
-      { "account": "franzhemmer", "org": "HemSoft" },
-      { "account": "fhemmerrelias", "org": "relias-engineering" }
+      { "account": "account1", "org": "org1" },
+      { "account": "account2", "org": "org2" },
+      { "account": "account3", "org": "org3" }
     ]
   },
   "bitbucket": {
-    "workspace": "relias",
-    "userDisplayName": "Franz Hemmer"
+    "workspace": "your-workspace",
+    "userDisplayName": "Your Name"
   },
   "skipBitbucket": false,
   "watchInterval": 15
@@ -158,7 +158,7 @@ If you see errors about missing PRs or authentication:
 
 5. **Verify organization access:**
    ```bash
-   prs auth-check --org relias-engineering
+   prs auth-check --org your-org
    ```
 
 ## Requirements

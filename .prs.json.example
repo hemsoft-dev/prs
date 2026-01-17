@@ -1,15 +1,15 @@
 {
   "github": {
-    "org": "relias-engineering",
+    "org": "your-org",
     "accounts": [
-      { "account": "HemSoft", "org": "HemSoft" },
-      { "account": "franzhemmer", "org": "HemSoft" },
-      { "account": "fhemmerrelias", "org": "relias-engineering" }
+      { "account": "account1", "org": "org1" },
+      { "account": "account2", "org": "org2" },
+      { "account": "account3", "org": "org3" }
     ]
   },
   "bitbucket": {
-    "workspace": "relias",
-    "userDisplayName": "Franz Hemmer"
+    "workspace": "your-workspace",
+    "userDisplayName": "Your Name"
   },
   "skipBitbucket": false,
   "watchInterval": 15

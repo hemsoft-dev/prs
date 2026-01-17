@@ -44,10 +44,10 @@ describe("loadConfig", () => {
 
     const config = loadConfig();
 
-    expect(config.github.org).toBe("relias-engineering");
+    expect(config.github.org).toBe("your-org");
     expect(config.github.token).toBeUndefined();
-    expect(config.bitbucket.workspace).toBe("relias");
-    expect(config.bitbucket.userDisplayName).toBe("Franz Hemmer");
+    expect(config.bitbucket.workspace).toBe("your-workspace");
+    expect(config.bitbucket.userDisplayName).toBe("Your Name");
     expect(config.skipBitbucket).toBe(false);
     expect(config.watchInterval).toBe(15);
     // Note: accounts may be loaded from local .prs.json if it exists
@@ -122,7 +122,7 @@ describe("loadConfig", () => {
     // Should fall back to defaults without throwing
     const config = loadConfig();
 
-    expect(config.github.org).toBe("relias-engineering");
+    expect(config.github.org).toBe("your-org");
   });
 
   it("should prefer environment variables over file config", () => {

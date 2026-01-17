@@ -168,7 +168,7 @@ export async function runInteractiveSetup(): Promise<Config> {
     const workspace = await prompt("Bitbucket workspace slug:");
     const username = await prompt("Bitbucket username (optional):");
     const apiKey = await prompt("Bitbucket App Password (optional):");
-    const displayName = await prompt("Your display name:", "Franz Hemmer");
+    const displayName = await prompt("Your display name:", "Your Name");
 
     bitbucketConfig = {
       workspace,

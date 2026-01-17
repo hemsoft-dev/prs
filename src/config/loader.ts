@@ -59,7 +59,7 @@ export function loadConfig(): Config {
   // Merge with environment variables (highest priority)
   const config: Partial<Config> = {
     github: {
-      org: process.env.GITHUB_ORG || fileConfig.github?.org || "relias-engineering",
+      org: process.env.GITHUB_ORG || fileConfig.github?.org || "your-org",
       token: process.env.GITHUB_TOKEN || process.env.GH_TOKEN || fileConfig.github?.token,
       // Support GITHUB_ACCOUNTS env var as JSON array
       accounts: process.env.GITHUB_ACCOUNTS
@@ -67,13 +67,14 @@ export function loadConfig(): Config {
         : fileConfig.github?.accounts,
     },
     bitbucket: {
-      workspace: process.env.BITBUCKET_WORKSPACE || fileConfig.bitbucket?.workspace || "relias",
+      workspace:
+        process.env.BITBUCKET_WORKSPACE || fileConfig.bitbucket?.workspace || "your-workspace",
       username: process.env.BITBUCKET_USERNAME || fileConfig.bitbucket?.username,
       apiKey: process.env.BITBUCKET_API_KEY || fileConfig.bitbucket?.apiKey,
       userDisplayName:
         process.env.BITBUCKET_USER_DISPLAY_NAME ||
         fileConfig.bitbucket?.userDisplayName ||
-        "Franz Hemmer",
+        "Your Name",
     },
     skipBitbucket: process.env.SKIP_BITBUCKET === "true" || fileConfig.skipBitbucket || false,
     watchInterval: process.env.WATCH_INTERVAL

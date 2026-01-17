@@ -322,8 +322,8 @@ program
               repoName = `${repoName.substring(0, maxRepoLen - 3)}...`;
             }
 
-            // Shorten author name (remove -relias suffix)
-            let author = pr.author.replace(/-relias$/, "");
+            // Shorten author name if needed
+            let author = pr.author;
             const maxAuthorLen = fixedWidths.author - 3;
             if (author.length > maxAuthorLen) {
               author = `${author.substring(0, maxAuthorLen - 3)}...`;

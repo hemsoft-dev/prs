@@ -19,7 +19,7 @@ describe("Config Schemas", () => {
 
       const result = GitHubConfigSchema.parse(config);
 
-      expect(result.org).toBe("relias-engineering");
+      expect(result.org).toBe("your-org");
       expect(result.token).toBeUndefined();
     });
 
@@ -53,8 +53,8 @@ describe("Config Schemas", () => {
 
       const result = BitbucketConfigSchema.parse(config);
 
-      expect(result.workspace).toBe("relias");
-      expect(result.userDisplayName).toBe("Franz Hemmer");
+      expect(result.workspace).toBe("your-workspace");
+      expect(result.userDisplayName).toBe("Your Name");
       expect(result.username).toBeUndefined();
       expect(result.apiKey).toBeUndefined();
     });
