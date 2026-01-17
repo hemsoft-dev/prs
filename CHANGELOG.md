@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-01-16
+
+### Changed
+
+- Removed company-specific default values from configuration
+- Updated default organization to "your-org" (was company-specific)
+- Updated default workspace to "your-workspace" (was company-specific)
+- Updated default user display name to "Your Name" (was company-specific)
+- Removed company-specific author name transformation logic
+
 ## [0.1.0] - 2026-01-16
 
 ### Added
