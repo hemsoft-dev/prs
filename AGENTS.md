@@ -6,12 +6,14 @@
 
 ## Tech Stack
 
-- **Runtime**: Bun
+- **Runtime**: Bun (development) / Node.js (npm distribution)
 - **Language**: TypeScript (strict mode)
 - **Linting**: Biome
 - **Testing**: Vitest (90%+ coverage required)
 - **Console**: consola
 - **CLI Parsing**: commander
+- **Distribution**: npm package (@hemsoft/prs)
+- **Required External Tool**: GitHub CLI (`gh`)
 
 ## Development
 
@@ -149,4 +151,71 @@ Before publishing to npm:
 - Always run `bun run lint:fix` before committing
 - Run `bun run test:coverage` to verify coverage thresholds
 - Use path aliases (`@/`) for cleaner imports
-- Prefer Bun-native APIs over Node.js equivalents when available
+- **CRITICAL**: Do NOT use Bun-specific APIs in source code (e.g., `Bun.spawn`, `$` shell)
+  - Use Node.js equivalents: `child_process.exec` with `promisify`
+  - Build target is `--target node` for npm distribution
+- Version should be read from `package.json`, never hardcoded
+- Local `.prs.json` config files can interfere with tests - temporarily rename during test runs
+- Pre-commit hooks will block commits if tests fail - fix tests before attempting to commit
+- Cannot republish same npm version - must bump version number for any changes
+- GitHub CLI (`gh`) is a hard dependency - tool architecture relies on it for auth and API access
+
+## Common Pitfalls & Solutions
+
+### Issue: Package works with Bun but fails with Node.js
+
+**Cause**: Using Bun-specific APIs like `Bun.spawn`, `Bun.$`, or other Bun runtime features
+
+**Solution**: 
+- Replace `Bun.spawn` with Node.js `child_process.exec` using `promisify`
+- Replace Bun's `$` shell with standard Node.js child process APIs
+- Always test built output with Node.js: `node dist/index.js --version`
+
+### Issue: Tests expect different default values
+
+**Cause**: Local `.prs.json` config file being loaded during tests
+
+**Solution**:
+- `.prs.json` is in `.gitignore` for development use
+- Temporarily rename it during test runs: `Rename-Item .prs.json .prs.json.dev`
+- Or run tests from clean temp directory
+
+### Issue: npm publish fails with "cannot publish over existing version"
+
+**Cause**: Trying to republish same version number
+
+**Solution**:
+- Bump version in `package.json`
+- Update `CHANGELOG.md` with new version entry
+- Commit, tag, and republish
+- Consider using `npm version patch/minor/major` to automate
+
+### Issue: CLI shows wrong version number
+
+**Cause**: Version hardcoded in source instead of reading from package.json
+
+**Solution**:
+```typescript
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJson = JSON.parse(readFileSync(join(__dirname, "..", "package.json"), "utf-8"));
+const version = packageJson.version;
+```
+
+## Build Targets
+
+- **Development**: Run with `bun run dev` using Bun runtime
+- **npm Distribution**: Build with `--target node` for Node.js compatibility
+- **Windows Executable**: Build with `--target bun-windows-x64 --compile` (Bun-only, not for npm)
+
+## Configuration Locations
+
+Priority order (highest to lowest):
+1. `./.prs.json` - Local project config (gitignored, for development)
+2. `~/hemsoft/prs/config.json` - Standard user config location
+3. `~/.prs.json` - Legacy location (deprecated)
+4. Environment variables - Override any config value
