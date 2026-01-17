@@ -1,3 +1,5 @@
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
 import { consola } from "consola";
 import type { GitHubConfig } from "../types/config.js";
 import {
@@ -5,6 +7,8 @@ import {
   GitHubPullRequestSchema,
   type GitHubSearchResult,
 } from "../types/github.js";
+
+const execAsync = promisify(exec);
 
 export interface PullRequest {
   source: "GitHub" | "Bitbucket";
@@ -32,12 +36,8 @@ export class GitHubClient {
    */
   async isAvailable(): Promise<boolean> {
     try {
-      const proc = Bun.spawn(["gh", "--version"], {
-        stdout: "pipe",
-        stderr: "pipe",
-      });
-      await proc.exited;
-      return proc.exitCode === 0;
+      await execAsync("gh --version");
+      return true;
     } catch {
       return false;
     }
@@ -48,20 +48,13 @@ export class GitHubClient {
    */
   async getAuthenticatedAccounts(): Promise<string[]> {
     try {
-      const proc = Bun.spawn(["gh", "auth", "status"], {
-        stdout: "pipe",
-        stderr: "pipe",
-      });
+      const { stdout, stderr } = await execAsync("gh auth status");
       // gh auth status outputs to stderr
-      const stderrText = await new Response(proc.stderr).text();
-      const stdoutText = await new Response(proc.stdout).text();
-      await proc.exited;
-
-      consola.debug("gh auth status stderr:", stderrText);
-      consola.debug("gh auth status stdout:", stdoutText);
+      consola.debug("gh auth status stderr:", stderr);
+      consola.debug("gh auth status stdout:", stdout);
 
       // Try both stderr and stdout
-      const text = stderrText || stdoutText;
+      const text = stderr || stdout;
 
       const accounts: string[] = [];
       // Match various formats: with/without checkmark, with/without ANSI codes
@@ -87,12 +80,8 @@ export class GitHubClient {
    */
   async isAuthenticated(): Promise<boolean> {
     try {
-      const proc = Bun.spawn(["gh", "auth", "status"], {
-        stdout: "pipe",
-        stderr: "pipe",
-      });
-      await proc.exited;
-      return proc.exitCode === 0;
+      await execAsync("gh auth status");
+      return true;
     } catch {
       return false;
     }
@@ -103,25 +92,17 @@ export class GitHubClient {
    */
   async getCurrentUser(): Promise<string | null> {
     try {
-      const proc = Bun.spawn(["gh", "api", "user", "--jq", ".login"], {
-        stdout: "pipe",
-        stderr: "pipe",
-      });
-      const text = await new Response(proc.stdout).text();
-      const errText = await new Response(proc.stderr).text();
-      await proc.exited;
-
-      if (proc.exitCode === 0) {
-        return text.trim();
-      }
-
+      const { stdout } = await execAsync("gh api user --jq .login");
+      return stdout.trim();
+    } catch (error: unknown) {
+      const errText =
+        error instanceof Error
+          ? (error as Error & { stderr?: string }).stderr || error.message
+          : "";
       // Check if it's an auth error
       if (errText.includes("authentication") || errText.includes("401")) {
         consola.debug("GitHub authentication error detected:", errText);
       }
-
-      return null;
-    } catch (error) {
       consola.debug("Failed to get current user:", error);
       return null;
     }
@@ -132,12 +113,8 @@ export class GitHubClient {
    */
   async switchAccount(account: string): Promise<boolean> {
     try {
-      const proc = Bun.spawn(["gh", "auth", "switch", "--user", account], {
-        stdout: "pipe",
-        stderr: "pipe",
-      });
-      await proc.exited;
-      return proc.exitCode === 0;
+      await execAsync(`gh auth switch --user "${account}"`);
+      return true;
     } catch {
       return false;
     }
@@ -152,16 +129,13 @@ export class GitHubClient {
   ): Promise<{ accessible: boolean; error?: string }> {
     try {
       // Try to list repos in the org (with limit 1 to be fast)
-      const proc = Bun.spawn(["gh", "repo", "list", org, "--limit", "1", "--json", "name"], {
-        stdout: "pipe",
-        stderr: "pipe",
-      });
-      const errText = await new Response(proc.stderr).text();
-      await proc.exited;
-
-      if (proc.exitCode === 0) {
-        return { accessible: true };
-      }
+      await execAsync(`gh repo list "${org}" --limit 1 --json name`);
+      return { accessible: true };
+    } catch (error: unknown) {
+      const errText =
+        error instanceof Error
+          ? (error as Error & { stderr?: string }).stderr || error.message
+          : "";
 
       // Parse error message for helpful feedback
       if (errText.includes("404") || errText.includes("Not Found")) {
@@ -189,11 +163,6 @@ export class GitHubClient {
         accessible: false,
         error: `Failed to access organization '${org}': ${errText.trim()}`,
       };
-    } catch (error) {
-      return {
-        accessible: false,
-        error: `Error checking organization access: ${error}`,
-      };
     }
   }
 
@@ -213,25 +182,12 @@ export class GitHubClient {
    */
   async getPRDetails(prUrl: string): Promise<GitHubPullRequest | null> {
     try {
-      const proc = Bun.spawn(
-        [
-          "gh",
-          "pr",
-          "view",
-          prUrl,
-          "--json",
-          "number,title,url,state,mergedAt,createdAt,author,reviews,assignees",
-        ],
-        {
-          stdout: "pipe",
-          stderr: "pipe",
-        },
+      const { stdout } = await execAsync(
+        `gh pr view "${prUrl}" --json number,title,url,state,mergedAt,createdAt,author,reviews,assignees`,
       );
-      const text = await new Response(proc.stdout).text();
-      await proc.exited;
 
-      if (proc.exitCode === 0 && text.trim()) {
-        const data = JSON.parse(text);
+      if (stdout.trim()) {
+        const data = JSON.parse(stdout);
         return GitHubPullRequestSchema.parse(data);
       }
       return null;
@@ -246,34 +202,16 @@ export class GitHubClient {
    */
   async searchPRs(args: string[]): Promise<GitHubSearchResult[]> {
     try {
-      const fullArgs = [
-        "search",
-        "prs",
-        ...args,
-        "--json",
-        "number,title,url,repository",
-        "--limit",
-        "100",
-      ];
+      const argsStr = args.join(" ");
+      const { stdout } = await execAsync(
+        `gh search prs ${argsStr} --json number,title,url,repository --limit 100`,
+      );
 
-      const proc = Bun.spawn(["gh", ...fullArgs], {
-        stdout: "pipe",
-        stderr: "pipe",
-      });
-      const text = await new Response(proc.stdout).text();
-      await proc.exited;
-
-      if (proc.exitCode !== 0) {
-        const errText = await new Response(proc.stderr).text();
-        consola.debug("GitHub CLI error:", errText);
+      if (!stdout.trim()) {
         return [];
       }
 
-      if (!text.trim()) {
-        return [];
-      }
-
-      const data = JSON.parse(text);
+      const data = JSON.parse(stdout);
       return Array.isArray(data) ? data : [];
     } catch (error) {
       consola.debug("Failed to search PRs:", error);
