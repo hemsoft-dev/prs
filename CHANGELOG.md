@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-01-17
+
+### Fixed
+
+- **CRITICAL**: Replaced `Bun.spawn()` and `Bun.sleep()` with Node.js equivalents for npm distribution compatibility
+  - Replaced `Bun.spawn()` with `child_process.execFile()` in auth-check utility
+  - Replaced `Bun.sleep()` with `setTimeout()` Promise wrapper in watch mode and API retry logic
+  - Package now works correctly when installed via npm on systems without Bun runtime
+
 ## [0.1.4] - 2026-01-16
 
 ### Fixed

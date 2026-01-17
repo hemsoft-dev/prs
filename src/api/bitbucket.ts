@@ -68,7 +68,7 @@ export class BitbucketClient {
             consola.debug(
               `Rate limited. Waiting ${waitTime}s before retry ${attempt}/${maxAttempts}`,
             );
-            await Bun.sleep(waitTime * 1000);
+            await new Promise((resolve) => setTimeout(resolve, waitTime * 1000));
             continue;
           }
         }

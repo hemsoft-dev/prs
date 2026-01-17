@@ -370,7 +370,7 @@ program
             consola.info(
               `\nNext refresh at ${nextRun.toLocaleTimeString()}. Waiting ${config.watchInterval} minutes...`,
             );
-            await Bun.sleep(config.watchInterval * 60 * 1000);
+            await new Promise((resolve) => setTimeout(resolve, config.watchInterval * 60 * 1000));
           }
         }
 
