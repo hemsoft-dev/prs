@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import chalk from "chalk";
 import Table from "cli-table3";
 import { Command } from "commander";
@@ -16,12 +18,19 @@ import {
 } from "./utils/interactive-setup.js";
 import { getRandomSplashText } from "./utils/splash-texts.js";
 
+// Get version from package.json
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJsonPath = join(__dirname, "..", "package.json");
+const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+const version = packageJson.version;
+
 const program = new Command();
 
 program
   .name("prs")
   .description("Tool to check PR assignments and do agentic analysis on PRs")
-  .version("1.0.0");
+  .version(version);
 
 // Add init command
 program
