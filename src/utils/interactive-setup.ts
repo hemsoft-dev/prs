@@ -25,17 +25,22 @@ export async function checkGitHubCLI(): Promise<boolean> {
  */
 export async function getGitHubAccounts(): Promise<string[]> {
   try {
-    const { stderr } = await execAsync("gh auth status");
-    const output = stderr;
+    const { stdout, stderr } = await execAsync("gh auth status");
+    // gh auth status outputs to stdout on success, stderr on failure
+    // Check both to handle different versions/platforms
+    const output = stdout || stderr;
 
     const accounts: string[] = [];
-    const regex = /✓\s+Logged in to github\.com account (\S+)/gi;
+    // Match "Logged in to github.com account USERNAME" - the checkmark may vary by platform
+    const regex = /Logged in to github\.com account (\S+)/gi;
     let match: RegExpExecArray | null = null;
 
     match = regex.exec(output);
     while (match !== null) {
       if (match[1]) {
-        accounts.push(match[1]);
+        // Strip trailing (keyring) or similar parenthetical info
+        const account = match[1].replace(/\([^)]*\)$/, "");
+        accounts.push(account);
       }
       match = regex.exec(output);
     }

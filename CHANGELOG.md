@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.6] - 2026-01-20
+
+### Fixed
+
+- **GitHub account detection**: Fixed `getGitHubAccounts()` to check both stdout and stderr from `gh auth status`
+- **Cross-platform regex**: Removed Unicode checkmark dependency from regex pattern to handle encoding differences
+- Account detection now works reliably on Windows when installed via npm
+
 ## [0.1.5] - 2026-01-17
 
 ### Fixed
