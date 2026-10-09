@@ -23,12 +23,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/HemSoft/prs.git"
+    "url": "https://github.com/hemsoft-dev/prs.git"
   },
   "bugs": {
-    "url": "https://github.com/HemSoft/prs/issues"
+    "url": "https://github.com/hemsoft-dev/prs/issues"
   },
-  "homepage": "https://github.com/HemSoft/prs#readme",
+  "homepage": "https://github.com/hemsoft-dev/prs#readme",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target node",
